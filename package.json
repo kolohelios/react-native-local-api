@@ -1,26 +1,26 @@
 {
   "name": "react-native-local-api",
   "title": "React Native Local Api",
-  "version": "1.0.0",
-  "description": "TODO",
+  "version": "0.0.1",
+  "description": "Plugin for connecting to local servers that use self-signed certificates or certificates with a subject that does not match the local server's IP address.  This plugin can also help manage cookies.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/github_account/react-native-local-api.git",
-    "baseUrl": "https://github.com/github_account/react-native-local-api"
+    "url": "git+https://github.com/kolohelios/react-native-local-api.git",
+    "baseUrl": "https://github.com/kolohelios/react-native-local-api"
   },
   "keywords": [
     "react-native"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "yourname@email.com"
+    "name": "Jon Edwards",
+    "email": "jkedwards@me.com"
   },
   "license": "MIT",
-  "licenseFilename": "LICENSE",
+  "licenseFilename": "LICENSE.md",
   "readmeFilename": "README.md",
   "peerDependencies": {
     "react": "^16.8.1",
