@@ -2,9 +2,7 @@ package com.kolohelios.reactnative.localapi;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -22,24 +20,6 @@ import okhttp3.Response;
 
 public final class OkHttpProvider {
   public static OkHttpClient client;
-
-  // public OkHttpProvider() {
-  //   OkHttpClient.Builder builder = new OkHttpClient.Builder();
-  //   builder.hostnameVerifier(new HostnameVerifier() {
-  //     @Override
-  //     public boolean verify(String hostname, SSLSession sslSession) {
-  //       if (hostname.contains("192.168.50.1")) {
-  //         return true;
-  //       }
-  //       return false;
-  //     }
-  //   });
-  //   builder.certificatePinner(
-  //     new CertificatePinner.Builder()
-  //         .add("192.168.50.1", "sha256/wtRD2QevGVnabD+LLu0Z0TlWAQyiF2z7ZpfyMcVwVOA=")
-  //         .build());
-  //   client = builder.build();
-  // }
 
   public static void setPin(String hostname, ReadableArray publicKeys, String verificationURL, Promise promise) throws Exception {
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
@@ -93,9 +73,6 @@ public final class OkHttpProvider {
     try (Response response = client.newCall(request).execute()) {
       if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
 
-//      for (Certificate certificate : response.handshake().peerCertificates()) {
-//        System.out.println(CertificatePinner.pin(certificate));
-//      }
       promise.resolve(response.handshake().peerCertificates().toString());
     } catch (Exception e) {
       promise.reject(e);

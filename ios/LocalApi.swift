@@ -1,15 +1,16 @@
 import Foundation
 import Alamofire
 
-func sessionManagerFactory() -> SessionManager {
+func sessionManagerFactory(timeout: Double, certForHost: String) -> SessionManager {
     let serverTrustPolicies: [String: ServerTrustPolicy] = [
-        // TODO add pinning here
-        // TODO make this programmatic and line up with Android method
-        "192.168.50.1": .disableEvaluation
+        certForHost: .pinCertificates(
+            certificates: ServerTrustPolicy.certificates(),
+            validateCertificateChain: true,
+            validateHost: false)
     ]
     
     let configuration = URLSessionConfiguration.default
-    configuration.timeoutIntervalForRequest = 5
+    configuration.timeoutIntervalForRequest = timeout
     configuration.httpShouldSetCookies = true
     
     let sessionManager = SessionManager(
@@ -22,7 +23,10 @@ func sessionManagerFactory() -> SessionManager {
 
 @objc(LocalApi)
 class LocalApi: NSObject {
-    var sessionManager = sessionManagerFactory()
+    // 60 seconds is the default timeout in iOS
+    var timeout = 60 as Double
+    var localNetworkHost = "192.168.1.1"
+    var sessionManager = sessionManagerFactory(timeout: 60, certForHost: "192.168.1.1")
     
     @objc func apiRequest(_ url: String, method: String, body: Dictionary<AnyHashable, Any>, setCookie: Bool,
         resolver resolve: @escaping RCTPromiseResolveBlock,
@@ -72,8 +76,14 @@ class LocalApi: NSObject {
         HTTPCookieStorage.shared.cookies?.forEach(HTTPCookieStorage.shared.deleteCookie)
     }
     
+    @objc func pinCertificate(_ hostname: String, publicKeys: [String], verificationURL: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
+        sessionManager = sessionManagerFactory(timeout: timeout, certForHost: hostname)
+        // TODO add a check using apiRequest to ensure the pinning has been successful (or if it was unnecesary)
+        resolve(true)
+    }
+    
     // TODO get this working by reassigning a new instance of sessionManager that includes new timeouts
-    @objc func setTimeout(_ timeout: Double) -> Void {
-        sessionManager = sessionManagerFactory()
+    @objc func setTimeout(_ newTimeout: Double) -> Void {
+        sessionManager = sessionManagerFactory(timeout: newTimeout, certForHost: localNetworkHost)
     }
 }
