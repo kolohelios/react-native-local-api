@@ -10,7 +10,6 @@
 RCT_EXTERN_METHOD(
   apiRequest:(NSString *) url
   method:(NSString *) method
-  params:(NSDictionary *) params
   body:(NSDictionary *) body
   setCookie:(BOOL) setCookie
   resolver:(RCTPromiseResolveBlock)resolve

@@ -24,7 +24,7 @@ func sessionManagerFactory() -> SessionManager {
 class LocalApi: NSObject {
     var sessionManager = sessionManagerFactory()
     
-    @objc func apiRequest(_ url: String, method: String, params: Dictionary<AnyHashable, Any>, body: Dictionary<AnyHashable, Any>, setCookie: Bool,
+    @objc func apiRequest(_ url: String, method: String, body: Dictionary<AnyHashable, Any>, setCookie: Bool,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
         sessionManager.request(url, method: HTTPMethod(rawValue: method)!, parameters: body as? Parameters).responseData { (responseObject) -> Void in
