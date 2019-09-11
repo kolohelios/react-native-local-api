@@ -3,7 +3,7 @@ import { NativeModules } from 'react-native';
 const { LocalApi } = NativeModules;
 
 export default {
-  apiRequest: async (url, method, params, body, setCookie) => {
+  apiRequest: async (url, method, params = {}, body = {}, setCookie = false) => {
     const paramKeys = Object.keys(params);
 
     if (paramKeys) {
