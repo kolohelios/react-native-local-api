@@ -2,12 +2,12 @@ package com.kolohelios.reactnative.localapi;
 
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableArray;
-import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 import okhttp3.CertificatePinner;
