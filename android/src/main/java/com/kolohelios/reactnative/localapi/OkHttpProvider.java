@@ -33,6 +33,13 @@ public final class OkHttpProvider {
         }
       });
 
+    // 60 seconds as a default matches what iOS's default timeout is and should support API calls that take a relatively long time, such as those with side-effects
+    builder.connectTimeout(60, TimeUnit.SECONDS)
+      .callTimeout(60, TimeUnit.SECONDS)
+      .writeTimeout(60, TimeUnit.SECONDS)
+      .readTimeout(60, TimeUnit.SECONDS)
+      .retryOnConnectionFailure(false);
+
     CertificatePinner.Builder certificatePinnerBuilder = new CertificatePinner.Builder();
 
     List<Object> publicKeysArrayObjects = publicKeys.toArrayList();
