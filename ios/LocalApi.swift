@@ -8,18 +8,21 @@ func sessionManagerFactory(timeout: Double, certForHost: String) -> SessionManag
             validateCertificateChain: true,
             validateHost: false)
     ]
-    
+
+    var headers = sessionManager.defaultHTTPHeaders
+    headers["Content-Type"] = "application/json"
+
     let configuration = URLSessionConfiguration.default
     configuration.timeoutIntervalForRequest = timeout
     configuration.httpShouldSetCookies = true
-    
+    configuration.httpAdditionalHeaders = headers
+
     let sessionManager = SessionManager(
         configuration: configuration,
         serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
     )
 
-    var headers = sessionManager.defaultHTTPHeaders
-    headers["Content-Type"] = "application/json"
+
 
     return sessionManager
 }
@@ -30,13 +33,13 @@ class LocalApi: NSObject {
     var timeout = 60 as Double
     var localNetworkHost = "192.168.1.1"
     var sessionManager = sessionManagerFactory(timeout: 60, certForHost: "192.168.1.1")
-    
+
     @objc func apiRequest(_ url: String, method: String, body: Dictionary<AnyHashable, Any>, setCookie: Bool,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
         sessionManager.request(url, method: HTTPMethod(rawValue: method)!, parameters: body as? Parameters).responseData { (responseObject) -> Void in
             guard case let .failure(error) = responseObject.result else { return }
-            
+
             if let error = error as? AFError {
                 switch error {
                 case .invalidURL(let url):
@@ -55,22 +58,22 @@ class LocalApi: NSObject {
             } else {
                 reject("Unknown error", error.localizedDescription, error)
             }
-            
-            }.responseString { (responseString) -> Void in
-                guard case .success = responseString.result else { return }
 
-                if setCookie {
-                    self.sessionManager.session.configuration.httpCookieStorage?.setCookie(HTTPCookieStorage.shared.cookies![0])
-                } else {
-                    self.sessionManager.session.configuration.httpShouldSetCookies = false
-                }
-                
-                if (responseString.value != nil) {
-                    resolve(responseString.value)
-                }
+        }.responseString { (responseString) -> Void in
+            guard case .success = responseString.result else { return }
+
+            if setCookie {
+                self.sessionManager.session.configuration.httpCookieStorage?.setCookie(HTTPCookieStorage.shared.cookies![0])
+            } else {
+                self.sessionManager.session.configuration.httpShouldSetCookies = false
+            }
+
+            if (responseString.value != nil) {
+                resolve(responseString.value)
+            }
         }
     }
-    
+
     @objc func clearCookies() -> Void {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy/MM/dd HH:mm"
@@ -78,13 +81,13 @@ class LocalApi: NSObject {
         sessionManager.session.configuration.httpCookieStorage?.removeCookies(since: arbitraryEarlyDate)
         HTTPCookieStorage.shared.cookies?.forEach(HTTPCookieStorage.shared.deleteCookie)
     }
-    
+
     @objc func pinCertificate(_ hostname: String, publicKeys: [String], verificationURL: String, resolver resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
         sessionManager = sessionManagerFactory(timeout: timeout, certForHost: hostname)
         // TODO add a check using apiRequest to ensure the pinning has been successful (or if it was unnecesary)
         resolve(true)
     }
-    
+
     // TODO get this working by reassigning a new instance of sessionManager that includes new timeouts
     @objc func setTimeout(_ newTimeout: Double) -> Void {
         sessionManager = sessionManagerFactory(timeout: newTimeout, certForHost: localNetworkHost)
