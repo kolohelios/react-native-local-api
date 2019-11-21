@@ -9,7 +9,7 @@ func sessionManagerFactory(timeout: Double, certForHost: String) -> SessionManag
             validateHost: false)
     ]
 
-    var headers = sessionManager.defaultHTTPHeaders
+    var headers = SessionManager.defaultHTTPHeaders
     headers["Content-Type"] = "application/json"
 
     let configuration = URLSessionConfiguration.default
