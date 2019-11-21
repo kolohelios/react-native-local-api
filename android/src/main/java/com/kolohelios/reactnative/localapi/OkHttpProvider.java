@@ -76,6 +76,7 @@ public final class OkHttpProvider {
 
     Request request = new Request.Builder()
         .url(verificationURL)
+        .header("Content-Type", "application/json")
         .build();
 
     try (Response response = client.newCall(request).execute()) {

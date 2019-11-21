@@ -17,7 +17,10 @@ func sessionManagerFactory(timeout: Double, certForHost: String) -> SessionManag
         configuration: configuration,
         serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
     )
-    
+
+    var headers = sessionManager.defaultHTTPHeaders
+    headers["Content-Type"] = "application/json"
+
     return sessionManager
 }
 
