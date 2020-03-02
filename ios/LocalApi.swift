@@ -22,9 +22,26 @@ func sessionManagerFactory(timeout: Double, certForHost: String) -> SessionManag
         serverTrustPolicyManager: ServerTrustPolicyManager(policies: serverTrustPolicies)
     )
 
-
-
     return sessionManager
+}
+
+// Objective C converts booleans to ints by design.  If your API isn't expecting that, this can be a problem.  Use this function to reverse that for any params listed in the convertTheseKeysToBooleans array.
+func convertBooleans(params: Dictionary<AnyHashable, Any>) -> Dictionary<AnyHashable, Any> {
+	let convertTheseKeysToBooleans: [String] = ["instantActive", "enable", "auto"]
+	func recurse(sourceObject: Dictionary<AnyHashable, Any>) -> Dictionary<AnyHashable, Any> {
+		var newObject: Dictionary<AnyHashable, Any> = [:]
+		for (key, value) in sourceObject {
+			if convertTheseKeysToBooleans.contains(key as! String) {
+				newObject[key] = value as! Int == 1 ? true : false
+			} else if value is [Dictionary<AnyHashable, Any>] {
+				newObject[key] = (value as! [Dictionary<AnyHashable, Any>]).map { recurse(sourceObject: $0) }
+			} else {
+				newObject[key] = value
+			}
+		}
+		return newObject
+	}
+	return recurse(sourceObject: params)
 }
 
 @objc(LocalApi)
@@ -37,7 +54,18 @@ class LocalApi: NSObject {
     @objc func apiRequest(_ url: String, method: String, body: Dictionary<AnyHashable, Any>, setCookie: Bool,
         resolver resolve: @escaping RCTPromiseResolveBlock,
         rejecter reject: @escaping RCTPromiseRejectBlock) -> Void {
-        sessionManager.request(url, method: HTTPMethod(rawValue: method)!, parameters: body as? Parameters).responseData { (responseObject) -> Void in
+
+        let url = NSURL(string: url as String)
+        var request = URLRequest(url: url! as URL)
+        request.httpMethod = method
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if (method == "POST") {
+            let data = try! JSONSerialization.data(withJSONObject: convertBooleans(params: body), options: JSONSerialization.WritingOptions.prettyPrinted)
+            let json = NSString(data: data, encoding: String.Encoding.utf8.rawValue)
+            request.httpBody = json!.data(using: String.Encoding.utf8.rawValue)
+        }
+
+        sessionManager.request(request).responseData { (responseObject) -> Void in
             guard case let .failure(error) = responseObject.result else { return }
 
             if let error = error as? AFError {
