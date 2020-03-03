@@ -1,7 +1,7 @@
 {
   "name": "react-native-local-api",
   "title": "React Native Local Api",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Plugin for connecting to local servers that use self-signed certificates or certificates with a subject that does not match the local server's IP address.  This plugin can also help manage cookies.",
   "main": "index.js",
   "scripts": {
