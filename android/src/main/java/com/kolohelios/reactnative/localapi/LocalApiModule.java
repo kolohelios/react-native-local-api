@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import org.json.JSONException;
 import java.io.IOException;
+import java.lang.Exception;
 
 public class LocalApiModule extends ReactContextBaseJavaModule {
 	private final ReactApplicationContext reactContext;
@@ -40,6 +41,8 @@ public class LocalApiModule extends ReactContextBaseJavaModule {
 		} catch (JSONException e) {
 			promise.reject(e);
 		} catch (IOException e) {
+			promise.reject(e);
+		} catch (Exception e) {
 			promise.reject(e);
 		}
 	}
