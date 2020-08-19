@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency "React"
-  s.dependency "Alamofire"
+  s.dependency "Alamofire", '~> 4.0'
 end
